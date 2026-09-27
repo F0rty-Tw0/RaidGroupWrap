@@ -13,7 +13,8 @@ $packageItems = @(
   "Core",
   "Settings",
   "Layout",
-  "EditMode"
+  "EditMode",
+  "Media"
 )
 
 if (-not (Test-Path $outputDir)) {

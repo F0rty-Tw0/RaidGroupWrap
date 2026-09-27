@@ -13,4 +13,5 @@ All releases: **0.1.x (current)**
 - Groups keep Blizzard's order and spacing, and the Edit Mode box fits the new shape.
 - Raid pet frames stay where Blizzard puts them.
 - If your raid changes during combat, the groups snap into place as soon as combat ends.
+- The addon list shows the Raid Group Wrap logo.
 - Works on Retail and WoW: Forever.

@@ -5,6 +5,7 @@
 ## Notes: Wraps separate raid groups onto extra rows/columns. Adds a "Groups Per Row" slider to the Raid Frames Edit Mode settings.
 ## Author: F0rty_tw0
 ## Category: Unit Frames
+## IconTexture: Interface\AddOns\RaidGroupWrap\Media\Icon
 ## Version: v0.1.0
 ## SavedVariables: RaidGroupWrapDB
 
