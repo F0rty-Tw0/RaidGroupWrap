@@ -1,0 +1,24 @@
+package-as: RaidGroupWrap
+enable-toc-creation: yes
+
+ignore:
+  - .github
+  - .claude
+  - tests
+  - scripts
+  - archive
+  - dist
+  - .editorconfig
+  - .gitattributes
+  - .gitignore
+  - .luacheckrc
+  - stylua.toml
+  - CLAUDE.md
+  - AGENTS.md
+  - SPEC.md
+  - README.md
+  - CHANGELOG.md
+
+manual-changelog:
+  filename: CHANGELOG.md
+  markup-type: markdown
