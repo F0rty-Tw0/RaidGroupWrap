@@ -6,6 +6,8 @@ All releases: **1.0.x (current)**
 
 ## [Unreleased]
 
+## [1.0.1] - 2026-09-27
+
 - Now available on CurseForge.
 
 ## [1.0.0] - 2026-09-28

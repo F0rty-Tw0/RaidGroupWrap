@@ -4,7 +4,7 @@ if type(ns) ~= "table" then
 end
 
 local Constants = {
-  VERSION = "v1.0.0",
+  VERSION = "v1.0.1",
 
   -- Raid groups in a full raid. Also the slider maximum: 8 per line is
   -- Blizzard's own look, so at 8 the addon idles.
