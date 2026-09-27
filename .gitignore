@@ -1,0 +1,9 @@
+dist/
+*.zip
+.env
+.claude
+.release
+.tools/
+.tmp_luals/
+__pycache__/
+/CLAUDE.md
