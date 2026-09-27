@@ -1,4 +1,4 @@
-<!-- TODO: add .github/assets/logo.png and screenshots (before/after raid layout, Edit Mode slider) once they exist. -->
+<p align="center"><img src=".github/assets/logo.png" alt="Raid Group Wrap logo" width="160"></p>
 
 <h1 align="center">Raid Group Wrap</h1>
 
@@ -10,6 +10,13 @@
 - **It's Blizzard's raid frames.** Same frames, same order, same spacing. Only the line breaks change.
 - **Works both ways.** Groups side by side wrap into new rows; stacked groups wrap into new columns.
 - **Nothing to learn.** The slider sits right under the Raid Frames settings in Edit Mode.
+
+## Screenshots
+
+<p align="center">
+  <img src=".github/assets/raid-three-per-row.png" alt="Five raid groups wrapped at three groups per row" width="300">
+  <img src=".github/assets/edit-mode-slider.png" alt="Groups Per Row slider under the Raid Frames settings in Edit Mode" width="500">
+</p>
 
 ## Settings
 
@@ -23,7 +30,7 @@ Combine Groups layouts already have Blizzard's own Row Size option, so the slide
 
 ## In combat
 
-Raid frames can't be moved during combat. If your raid changes mid-fight, the groups snap into place as soon as combat ends.
+WoW doesn't let addons move raid frames during combat. If your raid changes mid-fight, or you open Edit Mode in combat, Blizzard's layout shows until combat ends, then your layout comes back on its own. The slider is greyed out while you're in combat.
 
 ## Game versions
 
