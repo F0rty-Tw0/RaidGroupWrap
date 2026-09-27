@@ -6,6 +6,8 @@ All releases: **1.0.x (current)**
 
 ## [Unreleased]
 
+- Now available on CurseForge.
+
 ## [1.0.0] - 2026-09-28
 
 - First release: choose how many raid groups share one line, and the rest wrap onto a new line.
