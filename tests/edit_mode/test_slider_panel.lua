@@ -116,6 +116,39 @@ local function test_unchanged_slider_value_does_nothing()
   Assert.equal(changes.count, 0)
 end
 
+local function test_slider_is_enabled_when_opened_out_of_combat()
+  local W, panel = setup()
+  openRaidFrameSettings(W)
+  Assert.equal(panel.Slider:IsEnabled(), true)
+end
+
+local function test_slider_is_disabled_when_opened_in_combat()
+  local W, panel = setup()
+  W.inCombat = true
+  openRaidFrameSettings(W)
+  Assert.equal(panel.Slider:IsEnabled(), false)
+end
+
+local function test_combat_start_disables_the_open_slider_and_combat_end_enables_it()
+  local W, panel = setup()
+  openRaidFrameSettings(W)
+  W.fireEvent(panel, "PLAYER_REGEN_DISABLED")
+  Assert.equal(panel.Slider:IsEnabled(), false)
+  W.fireEvent(panel, "PLAYER_REGEN_ENABLED")
+  Assert.equal(panel.Slider:IsEnabled(), true)
+end
+
+local function test_panel_listens_for_combat_only_while_shown()
+  local W, panel = setup()
+  Assert.equal(panel:IsEventRegistered("PLAYER_REGEN_DISABLED"), false, "idle before Edit Mode")
+  openRaidFrameSettings(W)
+  Assert.equal(panel:IsEventRegistered("PLAYER_REGEN_DISABLED"), true)
+  Assert.equal(panel:IsEventRegistered("PLAYER_REGEN_ENABLED"), true)
+  W.fireScript(W.dialog, "OnHide")
+  Assert.equal(panel:IsEventRegistered("PLAYER_REGEN_DISABLED"), false)
+  Assert.equal(panel:IsEventRegistered("PLAYER_REGEN_ENABLED"), false)
+end
+
 local function test_panel_only_hooks_the_dialog()
   local W = Wow.Install()
   local dialogBefore = W.snapshot(W.dialog)
@@ -144,5 +177,9 @@ return function()
   test_closing_the_dialog_hides_the_panel()
   test_slider_change_saves_rounded_value_and_rewraps()
   test_unchanged_slider_value_does_nothing()
+  test_slider_is_enabled_when_opened_out_of_combat()
+  test_slider_is_disabled_when_opened_in_combat()
+  test_combat_start_disables_the_open_slider_and_combat_end_enables_it()
+  test_panel_listens_for_combat_only_while_shown()
   test_panel_only_hooks_the_dialog()
 end

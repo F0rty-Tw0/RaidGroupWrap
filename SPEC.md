@@ -36,11 +36,13 @@ One slider, docked under the **Raid Frames** settings dialog in Edit Mode.
 
 Raid group frames hold secure unit buttons and can't move in combat. A wrap requested in combat is skipped and retried once when combat ends. The combat-end event is registered only while that retry is pending.
 
+Blizzard may still re-lay out the raid frames in combat (roster changes, Edit Mode), so they show Blizzard's layout until combat ends. The slider is greyed out in combat; the panel listens for combat start/end only while it is shown.
+
 ## Performance rules (non-negotiable)
 
 1. **No `OnUpdate` handlers, no timers.** Code runs only when Blizzard lays out the raid frames, when the slider changes, or once after combat.
 2. **No libraries.**
-3. **Events registered only while needed** — the combat-end event only while a wrap is pending.
+3. **Events registered only while needed** — the combat-end event only while a wrap is pending; combat start/end for the slider only while the panel is shown.
 4. **Zero work when off** — at 8 groups per line the layout hook returns before touching any frame.
 5. **No garbage per layout** — group, size and position buffers are reused.
 6. Release zip is minified by CI.

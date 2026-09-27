@@ -45,12 +45,30 @@ local function createPanel(dialog)
   return panel
 end
 
+-- Groups can't move in combat, so the slider is greyed out there. Combat events
+-- are registered only while the panel is shown. The event drives the state:
+-- PLAYER_REGEN_DISABLED fires before InCombatLockdown() turns true.
+local function disableSliderInCombat(panel)
+  panel:SetScript("OnShow", function(self)
+    self:RegisterEvent("PLAYER_REGEN_DISABLED")
+    self:RegisterEvent("PLAYER_REGEN_ENABLED")
+  end)
+  panel:SetScript("OnHide", function(self)
+    self:UnregisterEvent("PLAYER_REGEN_DISABLED")
+    self:UnregisterEvent("PLAYER_REGEN_ENABLED")
+  end)
+  panel:SetScript("OnEvent", function(self, event)
+    self.Slider:SetEnabled(event == "PLAYER_REGEN_ENABLED")
+  end)
+end
+
 -- onChange runs after the player picks a new groups-per-line value.
 function SliderPanel.Install(db, onChange)
   local container = _G.CompactRaidFrameContainer
   local dialog = _G.EditModeSystemSettingsDialog
   local mixin = _G.MinimalSliderWithSteppersMixin
   local panel = createPanel(dialog)
+  disableSliderInCombat(panel)
   local formatters = {
     [mixin.Label.Right] = _G.CreateMinimalSliderFormatter(mixin.Label.Right),
   }
@@ -71,6 +89,7 @@ function SliderPanel.Install(db, onChange)
         == _G.Enum.RaidGroupDisplayType.SeparateGroupsHorizontal
       panel.Label:SetText(stacked and Localization.Text("Groups Per Column") or Localization.Text("Groups Per Row"))
       panel.Slider:Init(db.perLine, MIN_PER_LINE, Constants.MAX_GROUPS, Constants.MAX_GROUPS - MIN_PER_LINE, formatters)
+      panel.Slider:SetEnabled(not _G.InCombatLockdown())
     end
   end)
 

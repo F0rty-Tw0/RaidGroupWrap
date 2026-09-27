@@ -14,4 +14,5 @@ All releases: **0.1.x (current)**
 - Raid pet frames stay where Blizzard puts them.
 - If your raid changes during combat, the groups snap into place as soon as combat ends.
 - The addon list shows the Raid Group Wrap logo.
+- The Groups Per Row slider is greyed out during combat, since raid frames can't be moved until combat ends.
 - Works on Retail and WoW: Forever.

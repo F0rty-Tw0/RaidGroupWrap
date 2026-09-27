@@ -88,14 +88,32 @@ local function newWidget(W, frameType, name, parent, template)
   function widget:IsEventRegistered(event)
     return stub.events[event] == true
   end
+  -- Like WoW, a visibility change runs OnShow / OnHide (script, then hooks).
+  function widget:SetShown(shown)
+    shown = shown and true or false
+    if stub.shown == shown then
+      return
+    end
+    stub.shown = shown
+    local script = shown and "OnShow" or "OnHide"
+    if stub.scripts[script] then
+      stub.scripts[script](widget)
+    end
+    for _, fn in ipairs(stub.hooks[script] or {}) do
+      fn(widget)
+    end
+  end
   function widget:Show()
-    stub.shown = true
+    widget:SetShown(true)
   end
   function widget:Hide()
-    stub.shown = false
+    widget:SetShown(false)
   end
-  function widget:SetShown(shown)
-    stub.shown = shown and true or false
+  function widget:SetEnabled(enabled)
+    stub.enabled = enabled and true or false
+  end
+  function widget:IsEnabled()
+    return stub.enabled ~= false
   end
   function widget:IsShown()
     return stub.shown
