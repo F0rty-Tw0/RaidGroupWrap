@@ -6,7 +6,7 @@
 ## Author: F0rty_tw0
 ## Category: Unit Frames
 ## IconTexture: Interface\AddOns\RaidGroupWrap\Media\Icon
-## Version: v0.1.0
+## Version: v1.0.0
 ## SavedVariables: RaidGroupWrapDB
 
 Core/Constants.lua

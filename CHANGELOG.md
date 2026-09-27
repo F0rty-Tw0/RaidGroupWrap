@@ -1,10 +1,12 @@
 # Changelog
 
-Player-friendly release notes for RaidGroupWrap. This file covers the current 0.x series; older series live in [archive/changelog/](archive/changelog/).
+Player-friendly release notes for RaidGroupWrap. This file covers the current 1.x series; older series live in [archive/changelog/](archive/changelog/).
 
-All releases: **0.1.x (current)**
+All releases: **1.0.x (current)**
 
 ## [Unreleased]
+
+## [1.0.0] - 2026-09-28
 
 - First release: choose how many raid groups share one line, and the rest wrap onto a new line.
 - A "Groups Per Row" slider sits right under the Raid Frames settings in Edit Mode. With stacked groups it reads "Groups Per Column" and extra groups wrap into a new column on the right.
@@ -16,3 +18,4 @@ All releases: **0.1.x (current)**
 - The addon list shows the Raid Group Wrap logo.
 - The Groups Per Row slider is greyed out during combat, since raid frames can't be moved until combat ends.
 - Works on Retail and WoW: Forever.
+
