@@ -110,7 +110,7 @@ English only for now. Every player-visible string goes through `Localization.Tex
 
 1. Notes sit under `## [Unreleased]`, working tree clean.
 2. `bash scripts/release.sh <version>` — needs internet (reads live game versions from Blizzard). Promotes notes, bumps TOC + `Core/Constants.lua`, commits and tags.
-3. `git push origin master v<version>` — CI lints, minifies, re-runs tests, uploads to CurseForge, Wago and GitHub Releases (CurseForge / Wago project IDs still to be added to the TOC).
+3. `git push origin master v<version>` — CI lints, minifies, re-runs tests, uploads to CurseForge, Wago and GitHub Releases (Wago project ID still to be added to the TOC).
 
 ## Project Structure
 
