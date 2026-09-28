@@ -174,12 +174,23 @@ local function test_flip_fill_puts_odd_groups_on_top_and_even_groups_below()
   Assert.equal(height, 360)
 end
 
-local function test_flip_fill_keeps_the_grid_shape_and_fills_columns_first()
+local function test_flip_fill_at_three_per_row_fills_three_rows()
   local W, groups = setup(3, true)
   GroupWrap.Wrap()
   assertAt(W, groups[3], 0, -360)
   assertAt(W, groups[4], 72, 0)
   assertAt(W, groups[8], 144, -180)
+end
+
+local function test_flip_fill_counts_only_the_groups_present()
+  local W, groups = setup(3, true)
+  for _ = 1, 6 do
+    table.remove(W.container.flowFrames, 11) -- groups 6-8 and their line breaks
+  end
+  GroupWrap.Wrap()
+  assertAt(W, groups[2], 0, -180)
+  assertAt(W, groups[3], 72, 0)
+  assertAt(W, groups[5], 144, 0)
 end
 
 local function test_flip_fill_uses_the_real_orientation_spacing()
@@ -243,7 +254,8 @@ return function()
   test_paused_flow_updates_are_ignored()
   test_eight_per_line_leaves_blizzard_layout_untouched()
   test_flip_fill_puts_odd_groups_on_top_and_even_groups_below()
-  test_flip_fill_keeps_the_grid_shape_and_fills_columns_first()
+  test_flip_fill_at_three_per_row_fills_three_rows()
+  test_flip_fill_counts_only_the_groups_present()
   test_flip_fill_uses_the_real_orientation_spacing()
   test_flip_fill_with_stacked_groups_fills_rows_first()
   test_flip_fill_at_eight_per_line_leaves_blizzard_layout_untouched()

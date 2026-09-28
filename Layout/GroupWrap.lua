@@ -70,9 +70,9 @@ function GroupWrap.Wrap()
     gap = container.flowVerticalSpacing or 0
   end
 
-  -- Flip fill: same grid shape, but groups fill down each column first (1-3-5-7 over 2-4-6-8),
-  -- or across each row first when stacked. That is the other orientation's layout with
-  -- lines as long as the grid is deep.
+  -- Flip fill: groups fill down each column first (1-3-5-7 over 2-4-6-8), or across each
+  -- row first when stacked. Rows = groups / perLine rounded up; that is the other
+  -- orientation's layout with lines that long.
   local perLine = db.perLine
   if db.flipFill then
     perLine, sideBySide = ceil(#groups / perLine), not sideBySide
