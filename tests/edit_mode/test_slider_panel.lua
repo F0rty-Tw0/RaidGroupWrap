@@ -88,7 +88,7 @@ local function test_horizontal_groups_label_flip_fill_rows_first()
 end
 
 local function test_flip_fill_click_saves_and_rewraps()
-  local W, panel, db, changes = setup(4)
+  local W, panel, db, changes = setup(7)
   panel.FlipCheck:SetChecked(true)
   W.fireScript(panel.FlipCheck, "OnClick")
   Assert.equal(db.flipFill, true)
