@@ -23,7 +23,7 @@ end
 -- so the file never grows.
 function SavedState.Initialize(saved)
   saved = type(saved) == "table" and saved or {}
-  return { perLine = normalizePerLine(saved.perLine) }
+  return { perLine = normalizePerLine(saved.perLine), flipFill = saved.flipFill == true }
 end
 
 ns.SavedState = SavedState
