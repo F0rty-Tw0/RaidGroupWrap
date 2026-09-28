@@ -6,6 +6,8 @@ All releases: **1.0.x (current)**
 
 ## [Unreleased]
 
+## [1.0.2] - 2026-09-28
+
 - New "Odds / Evens" checkbox under the slider: groups fill each column top to bottom, so 4 per row puts groups 1-3-5-7 on top and 2-4-6-8 below. With stacked groups it reads "Fill Rows First".
 
 ## [1.0.1] - 2026-09-27

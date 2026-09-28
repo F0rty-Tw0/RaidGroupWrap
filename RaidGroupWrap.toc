@@ -7,7 +7,7 @@
 ## Category: Unit Frames
 ## IconTexture: Interface\AddOns\RaidGroupWrap\Media\Icon
 ## X-Curse-Project-ID: 1715361
-## Version: v1.0.1
+## Version: v1.0.2
 ## SavedVariables: RaidGroupWrapDB
 
 Core/Constants.lua
