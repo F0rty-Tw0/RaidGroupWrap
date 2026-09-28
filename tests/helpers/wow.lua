@@ -124,6 +124,12 @@ local function newWidget(W, frameType, name, parent, template)
   function widget:GetText()
     return stub.text
   end
+  function widget:SetChecked(checked)
+    stub.checked = checked and true or false
+  end
+  function widget:GetChecked()
+    return stub.checked == true
+  end
   function widget:CreateFontString(fontName, layer, fontTemplate)
     return newWidget(W, "FontString", fontName, widget, fontTemplate)
   end
