@@ -95,7 +95,9 @@ function SliderPanel.Install(db, onChange)
 
   panel.FlipCheck:SetScript("OnClick", function(self)
     db.flipFill = self:GetChecked()
-    onChange()
+    if db.perLine < Constants.MAX_GROUPS then
+      onChange() -- at 8 per line the fill order changes nothing, so Blizzard's layout stays untouched
+    end
   end)
 
   _G.hooksecurefunc(dialog, "UpdateSettings", function(self)

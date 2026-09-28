@@ -88,11 +88,19 @@ local function test_horizontal_groups_label_flip_fill_rows_first()
 end
 
 local function test_flip_fill_click_saves_and_rewraps()
-  local W, panel, db, changes = setup()
+  local W, panel, db, changes = setup(4)
   panel.FlipCheck:SetChecked(true)
   W.fireScript(panel.FlipCheck, "OnClick")
   Assert.equal(db.flipFill, true)
   Assert.equal(changes.count, 1)
+end
+
+local function test_flip_fill_click_at_eight_per_line_saves_without_rewrapping()
+  local W, panel, db, changes = setup(8)
+  panel.FlipCheck:SetChecked(true)
+  W.fireScript(panel.FlipCheck, "OnClick")
+  Assert.equal(db.flipFill, true)
+  Assert.equal(changes.count, 0)
 end
 
 local function test_raid_frame_settings_show_the_slider_with_saved_value()
@@ -212,6 +220,7 @@ return function()
   test_raid_frame_settings_show_the_saved_flip_fill()
   test_horizontal_groups_label_flip_fill_rows_first()
   test_flip_fill_click_saves_and_rewraps()
+  test_flip_fill_click_at_eight_per_line_saves_without_rewrapping()
   test_raid_frame_settings_show_the_slider_with_saved_value()
   test_horizontal_groups_label_the_slider_per_column()
   test_other_edit_mode_systems_hide_the_panel()
