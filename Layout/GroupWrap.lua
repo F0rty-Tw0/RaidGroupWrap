@@ -71,8 +71,8 @@ function GroupWrap.Wrap()
   end
 
   -- Flip fill: groups fill down each column first (1-3-5-7 over 2-4-6-8), or across each
-  -- row first when stacked. Rows = groups / perLine rounded up; that is the other
-  -- orientation's layout with lines that long.
+  -- row first when stacked. That is the other orientation's layout with lines of
+  -- groups / perLine rounded up (rows side by side, columns when stacked).
   local perLine = db.perLine
   if db.flipFill then
     perLine, sideBySide = ceil(#groups / perLine), not sideBySide
