@@ -6,6 +6,7 @@ end
 local Constants = ns.Constants or require("RaidGroupWrap.Core.Constants")
 local GroupGrid = ns.GroupGrid or require("RaidGroupWrap.Layout.GroupGrid")
 
+local ceil = math.ceil
 local ipairs = ipairs
 local type = type
 
@@ -69,9 +70,17 @@ function GroupWrap.Wrap()
     gap = container.flowVerticalSpacing or 0
   end
 
+  -- Flip fill: groups fill down each column first (1-3-5-7 over 2-4-6-8), or across each
+  -- row first when stacked. That is the other orientation's layout with lines of
+  -- groups / perLine rounded up (rows side by side, columns when stacked).
+  local perLine = db.perLine
+  if db.flipFill then
+    perLine, sideBySide = ceil(#groups / perLine), not sideBySide
+  end
+
   -- ponytail: only groups move; raid pets (Display Pets, off by default) keep Blizzard's spot.
   local _, _, _, x0, y0 = groups[1]:GetPoint(1)
-  local _, right, bottom = GroupGrid.Layout(sizes, db.perLine, sideBySide, x0, y0, gap, points)
+  local _, right, bottom = GroupGrid.Layout(sizes, perLine, sideBySide, x0, y0, gap, points)
   for i, group in ipairs(groups) do
     group:ClearAllPoints()
     group:SetPoint("TOPLEFT", container, "TOPLEFT", points[i].x, points[i].y)

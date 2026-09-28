@@ -7,9 +7,10 @@ local Constants = ns.Constants or require("RaidGroupWrap.Core.Constants")
 local Localization = ns.Localization or require("RaidGroupWrap.Core.Localization")
 
 local MIN_PER_LINE = 1
-local PANEL_HEIGHT = 60
-local DOCK_OFFSET_Y = 4
 local ROW_HEIGHT = 32
+local ROW_TOP_INSET = 14
+local PANEL_HEIGHT = ROW_TOP_INSET * 2 + ROW_HEIGHT * 2
+local DOCK_OFFSET_Y = 4
 local LABEL_WIDTH = 100
 local LABEL_INSET = 20
 local SLIDER_WIDTH = 200
@@ -37,18 +38,27 @@ local function createPanel(dialog)
   panel.Label = panel:CreateFontString(nil, "ARTWORK", "GameFontHighlightMedium")
   panel.Label:SetSize(LABEL_WIDTH, ROW_HEIGHT)
   panel.Label:SetJustifyH("LEFT")
-  panel.Label:SetPoint("LEFT", LABEL_INSET, 0)
+  panel.Label:SetPoint("TOPLEFT", LABEL_INSET, -ROW_TOP_INSET)
 
   panel.Slider = _G.CreateFrame("Frame", nil, panel, "MinimalSliderWithSteppersTemplate")
   panel.Slider:SetSize(SLIDER_WIDTH, ROW_HEIGHT)
   panel.Slider:SetPoint("LEFT", panel.Label, "RIGHT", SLIDER_GAP, 0)
+
+  -- Plain UICheckButtonTemplate, not Edit Mode's checkbox template, for the same reason.
+  panel.FlipLabel = panel:CreateFontString(nil, "ARTWORK", "GameFontHighlightMedium")
+  panel.FlipLabel:SetSize(LABEL_WIDTH, ROW_HEIGHT)
+  panel.FlipLabel:SetJustifyH("LEFT")
+  panel.FlipLabel:SetPoint("TOPLEFT", panel.Label, "BOTTOMLEFT", 0, 0)
+
+  panel.FlipCheck = _G.CreateFrame("CheckButton", nil, panel, "UICheckButtonTemplate")
+  panel.FlipCheck:SetPoint("LEFT", panel.FlipLabel, "RIGHT", SLIDER_GAP, 0)
   return panel
 end
 
--- Groups can't move in combat, so the slider is greyed out there. Combat events
+-- Groups can't move in combat, so the controls are greyed out there. Combat events
 -- are registered only while the panel is shown. The event drives the state:
 -- PLAYER_REGEN_DISABLED fires before InCombatLockdown() turns true.
-local function disableSliderInCombat(panel)
+local function disableInCombat(panel)
   panel:SetScript("OnShow", function(self)
     self:RegisterEvent("PLAYER_REGEN_DISABLED")
     self:RegisterEvent("PLAYER_REGEN_ENABLED")
@@ -58,17 +68,19 @@ local function disableSliderInCombat(panel)
     self:UnregisterEvent("PLAYER_REGEN_ENABLED")
   end)
   panel:SetScript("OnEvent", function(self, event)
-    self.Slider:SetEnabled(event == "PLAYER_REGEN_ENABLED")
+    local enabled = event == "PLAYER_REGEN_ENABLED"
+    self.Slider:SetEnabled(enabled)
+    self.FlipCheck:SetEnabled(enabled)
   end)
 end
 
--- onChange runs after the player picks a new groups-per-line value.
+-- onChange runs after the player picks a new groups-per-line value or fill order.
 function SliderPanel.Install(db, onChange)
   local container = _G.CompactRaidFrameContainer
   local dialog = _G.EditModeSystemSettingsDialog
   local mixin = _G.MinimalSliderWithSteppersMixin
   local panel = createPanel(dialog)
-  disableSliderInCombat(panel)
+  disableInCombat(panel)
   local formatters = {
     [mixin.Label.Right] = _G.CreateMinimalSliderFormatter(mixin.Label.Right),
   }
@@ -81,6 +93,13 @@ function SliderPanel.Install(db, onChange)
     end
   end, panel)
 
+  panel.FlipCheck:SetScript("OnClick", function(self)
+    db.flipFill = self:GetChecked()
+    if db.perLine < Constants.MAX_GROUPS then
+      onChange() -- at 8 per line the fill order changes nothing, so Blizzard's layout stays untouched
+    end
+  end)
+
   _G.hooksecurefunc(dialog, "UpdateSettings", function(self)
     local show = self.attachedToSystem == container and not container:UseCombinedGroups()
     panel:SetShown(show)
@@ -88,8 +107,12 @@ function SliderPanel.Install(db, onChange)
       local stacked = container:GetSettingValue(_G.Enum.EditModeUnitFrameSetting.RaidGroupDisplayType)
         == _G.Enum.RaidGroupDisplayType.SeparateGroupsHorizontal
       panel.Label:SetText(stacked and Localization.Text("Groups Per Column") or Localization.Text("Groups Per Row"))
+      panel.FlipLabel:SetText(stacked and Localization.Text("Fill Rows First") or Localization.Text("Odds / Evens"))
       panel.Slider:Init(db.perLine, MIN_PER_LINE, Constants.MAX_GROUPS, Constants.MAX_GROUPS - MIN_PER_LINE, formatters)
-      panel.Slider:SetEnabled(not _G.InCombatLockdown())
+      panel.FlipCheck:SetChecked(db.flipFill)
+      local enabled = not _G.InCombatLockdown()
+      panel.Slider:SetEnabled(enabled)
+      panel.FlipCheck:SetEnabled(enabled)
     end
   end)
 

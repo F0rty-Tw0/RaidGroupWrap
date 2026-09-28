@@ -35,6 +35,19 @@ local function test_unknown_saved_keys_are_dropped()
   Assert.equal(SavedState.Initialize({ perLine = 4, removedSetting = true }).removedSetting, nil)
 end
 
+local function test_new_install_fills_in_blizzard_order()
+  Assert.equal(SavedState.Initialize(nil).flipFill, false)
+end
+
+local function test_saved_flip_fill_survives_initialize()
+  Assert.equal(SavedState.Initialize({ flipFill = true }).flipFill, true)
+end
+
+local function test_non_boolean_flip_fill_falls_back_to_off()
+  Assert.equal(SavedState.Initialize({ flipFill = 1 }).flipFill, false)
+  Assert.equal(SavedState.Initialize({ flipFill = "true" }).flipFill, false)
+end
+
 return function()
   test_new_install_keeps_blizzard_layout()
   test_saved_choice_survives_initialize()
@@ -42,4 +55,7 @@ return function()
   test_out_of_range_value_is_clamped()
   test_non_number_value_falls_back_to_default()
   test_unknown_saved_keys_are_dropped()
+  test_new_install_fills_in_blizzard_order()
+  test_saved_flip_fill_survives_initialize()
+  test_non_boolean_flip_fill_falls_back_to_off()
 end
