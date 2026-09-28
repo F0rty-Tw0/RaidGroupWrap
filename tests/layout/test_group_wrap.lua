@@ -6,7 +6,7 @@ local GROUP_WIDTH, GROUP_HEIGHT = 72, 180
 
 -- Blizzard's default Separate Groups (Vertical) look: 8 groups side by side,
 -- a "linebreak" marker between them, and a raid pet frame at the end.
-local function setup(perLine)
+local function setup(perLine, flipFill)
   local W = Wow.Install()
   local groups = {}
   for i = 1, 8 do
@@ -17,7 +17,7 @@ local function setup(perLine)
   local pet = W.newGroup(72, 36, 0, -180)
   pet.isFlowGroup = nil
   W.container.flowFrames[#W.container.flowFrames + 1] = pet
-  local db = { perLine = perLine }
+  local db = { perLine = perLine, flipFill = flipFill }
   GroupWrap.Install(db)
   return W, groups, db, pet
 end
@@ -162,6 +162,50 @@ local function test_eight_per_line_leaves_blizzard_layout_untouched()
   Assert.equal(W.container:GetSize(), 0, "container not resized")
 end
 
+local function test_flip_fill_puts_odd_groups_on_top_and_even_groups_below()
+  local W, groups = setup(4, true)
+  GroupWrap.Wrap()
+  assertAt(W, groups[1], 0, 0)
+  assertAt(W, groups[2], 0, -180)
+  assertAt(W, groups[3], 72, 0)
+  assertAt(W, groups[8], 216, -180)
+  local width, height = W.container:GetSize()
+  Assert.equal(width, 288)
+  Assert.equal(height, 360)
+end
+
+local function test_flip_fill_keeps_the_grid_shape_and_fills_columns_first()
+  local W, groups = setup(3, true)
+  GroupWrap.Wrap()
+  assertAt(W, groups[3], 0, -360)
+  assertAt(W, groups[4], 72, 0)
+  assertAt(W, groups[8], 144, -180)
+end
+
+local function test_flip_fill_uses_the_real_orientation_spacing()
+  local W, groups = setup(4, true)
+  W.container.flowHorizontalSpacing = 10
+  W.container.flowVerticalSpacing = 99
+  GroupWrap.Wrap()
+  assertAt(W, groups[2], 0, -190)
+  assertAt(W, groups[3], 82, 0)
+end
+
+local function test_flip_fill_with_stacked_groups_fills_rows_first()
+  local W, groups = setup(2, true)
+  W.container.flowOrientation = "horizontal"
+  GroupWrap.Wrap()
+  assertAt(W, groups[2], 72, 0)
+  assertAt(W, groups[5], 0, -180)
+end
+
+local function test_flip_fill_at_eight_per_line_leaves_blizzard_layout_untouched()
+  local W, groups = setup(8, true)
+  W.callHooked(_G, "FlowContainer_DoLayout", W.container)
+  assertAt(W, groups[2], 72, 0)
+  Assert.equal(W.container:GetSize(), 0, "container not resized")
+end
+
 local function test_hook_uses_hooksecurefunc_and_keeps_blizzard_function()
   local W = Wow.Install()
   local original = _G.FlowContainer_DoLayout
@@ -198,6 +242,11 @@ return function()
   test_other_flow_containers_are_ignored()
   test_paused_flow_updates_are_ignored()
   test_eight_per_line_leaves_blizzard_layout_untouched()
+  test_flip_fill_puts_odd_groups_on_top_and_even_groups_below()
+  test_flip_fill_keeps_the_grid_shape_and_fills_columns_first()
+  test_flip_fill_uses_the_real_orientation_spacing()
+  test_flip_fill_with_stacked_groups_fills_rows_first()
+  test_flip_fill_at_eight_per_line_leaves_blizzard_layout_untouched()
   test_hook_uses_hooksecurefunc_and_keeps_blizzard_function()
   test_wrap_never_writes_fields_on_blizzard_frames()
 end
