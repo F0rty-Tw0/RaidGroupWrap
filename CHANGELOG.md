@@ -6,6 +6,8 @@ All releases: **1.0.x (current)**
 
 ## [Unreleased]
 
+## [1.0.3] - 2026-10-06
+
 - Fixed: the WoW: Forever beta no longer lists the addon as out of date.
 
 ## [1.0.2] - 2026-09-28
