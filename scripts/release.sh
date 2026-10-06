@@ -96,7 +96,11 @@ fi
 # file edit so a missing-notes error leaves the tree untouched.
 python scripts/promote_changelog.py --version "${TAG_VERSION}"
 
-sed -i "s/^## Interface: .*/## Interface: ${TOC_RETAIL}/" RaidGroupWrap.toc
+# The Forever client ignores the Interface-Forever line and reads only the
+# base line, so Forever's number rides there too (comma list). A failed
+# Forever fetch keeps the number already in the TOC.
+FOREVER_FOR_BASE="${TOC_FOREVER:-$(grep '^## Interface-Forever:' RaidGroupWrap.toc | grep -o '[0-9][0-9]*' | head -1)}"
+sed -i "s/^## Interface: .*/## Interface: ${TOC_RETAIL}${FOREVER_FOR_BASE:+, ${FOREVER_FOR_BASE}}/" RaidGroupWrap.toc
 sed -i "s/^## Interface-Mainline: .*/## Interface-Mainline: ${TOC_RETAIL}/" RaidGroupWrap.toc
 if [[ -n "$TOC_FOREVER" ]]; then
   sed -i "s/^## Interface-Forever: .*/## Interface-Forever: ${TOC_FOREVER}/" RaidGroupWrap.toc
