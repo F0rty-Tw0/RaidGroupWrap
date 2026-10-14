@@ -68,7 +68,7 @@ function GroupWrap.Wrap()
   if #groups == 0 then
     return
   end
-  if db.flipFill then
+  if db.flipFill and db.perLine < Constants.MAX_GROUPS then -- off at 8: Blizzard's order
     orderOddsThenEvens()
   end
   measureGroups()
