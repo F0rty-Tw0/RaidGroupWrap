@@ -6,7 +6,6 @@ end
 local Constants = ns.Constants or require("RaidGroupWrap.Core.Constants")
 local GroupGrid = ns.GroupGrid or require("RaidGroupWrap.Layout.GroupGrid")
 
-local ceil = math.ceil
 local ipairs = ipairs
 local type = type
 
@@ -22,7 +21,7 @@ local GroupWrap = {}
 
 local container, db, events
 -- Reused every layout, no garbage.
-local groups, sizes, points = {}, {}, {}
+local groups, ordered, sizes, points = {}, {}, {}, {}
 
 local function collectGroups()
   _G.wipe(groups)
@@ -31,6 +30,17 @@ local function collectGroups()
       groups[#groups + 1] = object
     end
   end
+end
+
+-- Odds / Evens: 1-3-5-7 then 2-4-6-8 in Blizzard's order, then wrapped as usual.
+local function orderOddsThenEvens()
+  _G.wipe(ordered)
+  for first = 1, 2 do
+    for i = first, #groups, 2 do
+      ordered[#ordered + 1] = groups[i]
+    end
+  end
+  groups, ordered = ordered, groups
 end
 
 local function measureGroups()
@@ -58,6 +68,9 @@ function GroupWrap.Wrap()
   if #groups == 0 then
     return
   end
+  if db.flipFill then
+    orderOddsThenEvens()
+  end
   measureGroups()
 
   -- Flow "vertical" = Separate Groups (Vertical): groups sit side by side, so a line is a row.
@@ -70,17 +83,9 @@ function GroupWrap.Wrap()
     gap = container.flowVerticalSpacing or 0
   end
 
-  -- Flip fill: groups fill down each column first (1-3-5-7 over 2-4-6-8), or across each
-  -- row first when stacked. That is the other orientation's layout with lines of
-  -- groups / perLine rounded up (rows side by side, columns when stacked).
-  local perLine = db.perLine
-  if db.flipFill then
-    perLine, sideBySide = ceil(#groups / perLine), not sideBySide
-  end
-
   -- ponytail: only groups move; raid pets (Display Pets, off by default) keep Blizzard's spot.
   local _, _, _, x0, y0 = groups[1]:GetPoint(1)
-  local _, right, bottom = GroupGrid.Layout(sizes, perLine, sideBySide, x0, y0, gap, points)
+  local _, right, bottom = GroupGrid.Layout(sizes, db.perLine, sideBySide, x0, y0, gap, points)
   for i, group in ipairs(groups) do
     group:ClearAllPoints()
     group:SetPoint("TOPLEFT", container, "TOPLEFT", points[i].x, points[i].y)

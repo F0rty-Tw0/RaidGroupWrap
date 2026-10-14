@@ -162,7 +162,7 @@ local function test_eight_per_line_leaves_blizzard_layout_untouched()
   Assert.equal(W.container:GetSize(), 0, "container not resized")
 end
 
-local function test_flip_fill_puts_odd_groups_on_top_and_even_groups_below()
+local function test_odds_evens_puts_odd_groups_on_top_and_even_groups_below()
   local W, groups = setup(4, true)
   GroupWrap.Wrap()
   assertAt(W, groups[1], 0, 0)
@@ -174,43 +174,40 @@ local function test_flip_fill_puts_odd_groups_on_top_and_even_groups_below()
   Assert.equal(height, 360)
 end
 
-local function test_flip_fill_at_three_per_row_fills_three_rows()
+local function test_odds_evens_at_three_per_row_wraps_the_odds_then_evens_order()
   local W, groups = setup(3, true)
   GroupWrap.Wrap()
-  assertAt(W, groups[3], 0, -360)
-  assertAt(W, groups[4], 72, 0)
-  assertAt(W, groups[8], 144, -180)
+  assertAt(W, groups[5], 144, 0)
+  assertAt(W, groups[7], 0, -180)
+  assertAt(W, groups[2], 72, -180)
+  assertAt(W, groups[8], 72, -360)
 end
 
-local function test_flip_fill_counts_only_the_groups_present()
-  local W, groups = setup(3, true)
-  for _ = 1, 6 do
-    table.remove(W.container.flowFrames, 11) -- groups 6-8 and their line breaks
+local function test_odds_evens_keeps_a_twenty_player_raid_on_one_row()
+  local W, groups = setup(4, true)
+  for _ = 1, 8 do
+    table.remove(W.container.flowFrames, 9) -- Blizzard shows only groups 1-4 and their line breaks
   end
   GroupWrap.Wrap()
-  assertAt(W, groups[2], 0, -180)
+  assertAt(W, groups[1], 0, 0)
   assertAt(W, groups[3], 72, 0)
-  assertAt(W, groups[5], 144, 0)
+  assertAt(W, groups[2], 144, 0)
+  assertAt(W, groups[4], 216, 0)
+  local width, height = W.container:GetSize()
+  Assert.equal(width, 288)
+  Assert.equal(height, 180)
 end
 
-local function test_flip_fill_uses_the_real_orientation_spacing()
-  local W, groups = setup(4, true)
-  W.container.flowHorizontalSpacing = 10
-  W.container.flowVerticalSpacing = 99
-  GroupWrap.Wrap()
-  assertAt(W, groups[2], 0, -190)
-  assertAt(W, groups[3], 82, 0)
-end
-
-local function test_flip_fill_with_stacked_groups_fills_rows_first()
+local function test_odds_evens_with_stacked_groups_puts_odds_in_the_first_columns()
   local W, groups = setup(2, true)
   W.container.flowOrientation = "horizontal"
   GroupWrap.Wrap()
-  assertAt(W, groups[2], 72, 0)
-  assertAt(W, groups[5], 0, -180)
+  assertAt(W, groups[3], 0, -180)
+  assertAt(W, groups[5], 72, 0)
+  assertAt(W, groups[2], 144, 0)
 end
 
-local function test_flip_fill_at_eight_per_line_leaves_blizzard_layout_untouched()
+local function test_odds_evens_at_eight_per_line_leaves_blizzard_layout_untouched()
   local W, groups = setup(8, true)
   W.callHooked(_G, "FlowContainer_DoLayout", W.container)
   assertAt(W, groups[2], 72, 0)
@@ -253,12 +250,11 @@ return function()
   test_other_flow_containers_are_ignored()
   test_paused_flow_updates_are_ignored()
   test_eight_per_line_leaves_blizzard_layout_untouched()
-  test_flip_fill_puts_odd_groups_on_top_and_even_groups_below()
-  test_flip_fill_at_three_per_row_fills_three_rows()
-  test_flip_fill_counts_only_the_groups_present()
-  test_flip_fill_uses_the_real_orientation_spacing()
-  test_flip_fill_with_stacked_groups_fills_rows_first()
-  test_flip_fill_at_eight_per_line_leaves_blizzard_layout_untouched()
+  test_odds_evens_puts_odd_groups_on_top_and_even_groups_below()
+  test_odds_evens_at_three_per_row_wraps_the_odds_then_evens_order()
+  test_odds_evens_keeps_a_twenty_player_raid_on_one_row()
+  test_odds_evens_with_stacked_groups_puts_odds_in_the_first_columns()
+  test_odds_evens_at_eight_per_line_leaves_blizzard_layout_untouched()
   test_hook_uses_hooksecurefunc_and_keeps_blizzard_function()
   test_wrap_never_writes_fields_on_blizzard_frames()
 end
