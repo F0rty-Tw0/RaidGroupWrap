@@ -6,6 +6,8 @@ All releases: **1.0.x (current)**
 
 ## [Unreleased]
 
+## [1.0.4] - 2026-10-14
+
 - Fixed: "Odds / Evens" now simply puts odd groups first, then even groups, and wraps as usual. A 20-player raid at 4 per row now shows one row: 1, 3, 2, 4.
 - "Odds / Evens" works the same with stacked groups, and the checkbox reads "Odds / Evens" in both layouts.
 

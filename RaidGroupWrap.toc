@@ -1,5 +1,5 @@
-## Interface: 120100, 16001
-## Interface-Mainline: 120100
+## Interface: 120105, 16001
+## Interface-Mainline: 120105
 ## Interface-Forever: 16001
 ## Title: Raid Group Wrap
 ## Notes: Wraps separate raid groups onto extra rows/columns. Adds a "Groups Per Row" slider to the Raid Frames Edit Mode settings.
@@ -7,7 +7,7 @@
 ## Category: Unit Frames
 ## IconTexture: Interface\AddOns\RaidGroupWrap\Media\Icon
 ## X-Curse-Project-ID: 1715361
-## Version: v1.0.3
+## Version: v1.0.4
 ## SavedVariables: RaidGroupWrapDB
 
 Core/Constants.lua
