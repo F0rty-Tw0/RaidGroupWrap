@@ -23,7 +23,7 @@
 1. Open **Edit Mode** and click the **Raid Frames**.
 2. Pick one of the **Separate Groups** layouts.
 3. Use the **Groups Per Row** (or **Groups Per Column**) slider under the settings window.
-   Tick **Odds / Evens** for odd groups on top and even groups below (for example 1-3-5-7 over 2-4-6-8 at 4 per row).
+   Tick **Odds / Evens** to put odd groups first, then even groups, wrapped at your per-row setting (for example 1-3-5-7 over 2-4-6-8 at 4 per row, or 1-3-2-4 in a 20-player raid).
 
 8 is Blizzard's normal layout. Your choice is saved for all your characters.
 
