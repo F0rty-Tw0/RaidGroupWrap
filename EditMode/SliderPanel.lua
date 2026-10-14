@@ -75,7 +75,7 @@ local function disableInCombat(panel)
   end)
 end
 
--- onChange runs after the player picks a new groups-per-line value or fill order.
+-- onChange runs after the player picks a new groups-per-line value or group order.
 function SliderPanel.Install(db, onChange)
   local container = _G.CompactRaidFrameContainer
   local dialog = _G.EditModeSystemSettingsDialog
@@ -97,7 +97,7 @@ function SliderPanel.Install(db, onChange)
   panel.OddsEvensCheck:SetScript("OnClick", function(self)
     db.flipFill = self:GetChecked()
     if db.perLine < Constants.MAX_GROUPS then
-      onChange() -- at 8 per line the fill order changes nothing, so Blizzard's layout stays untouched
+      onChange() -- Odds / Evens is off at 8 per line, so Blizzard's layout stays untouched
     end
   end)
 
