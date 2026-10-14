@@ -45,13 +45,14 @@ local function createPanel(dialog)
   panel.Slider:SetPoint("LEFT", panel.Label, "RIGHT", SLIDER_GAP, 0)
 
   -- Plain UICheckButtonTemplate, not Edit Mode's checkbox template, for the same reason.
-  panel.FlipLabel = panel:CreateFontString(nil, "ARTWORK", "GameFontHighlightMedium")
-  panel.FlipLabel:SetSize(LABEL_WIDTH, ROW_HEIGHT)
-  panel.FlipLabel:SetJustifyH("LEFT")
-  panel.FlipLabel:SetPoint("TOPLEFT", panel.Label, "BOTTOMLEFT", 0, 0)
+  panel.OddsEvensLabel = panel:CreateFontString(nil, "ARTWORK", "GameFontHighlightMedium")
+  panel.OddsEvensLabel:SetSize(LABEL_WIDTH, ROW_HEIGHT)
+  panel.OddsEvensLabel:SetJustifyH("LEFT")
+  panel.OddsEvensLabel:SetPoint("TOPLEFT", panel.Label, "BOTTOMLEFT", 0, 0)
+  panel.OddsEvensLabel:SetText(Localization.Text("Odds / Evens"))
 
-  panel.FlipCheck = _G.CreateFrame("CheckButton", nil, panel, "UICheckButtonTemplate")
-  panel.FlipCheck:SetPoint("LEFT", panel.FlipLabel, "RIGHT", SLIDER_GAP, 0)
+  panel.OddsEvensCheck = _G.CreateFrame("CheckButton", nil, panel, "UICheckButtonTemplate")
+  panel.OddsEvensCheck:SetPoint("LEFT", panel.OddsEvensLabel, "RIGHT", SLIDER_GAP, 0)
   return panel
 end
 
@@ -70,7 +71,7 @@ local function disableInCombat(panel)
   panel:SetScript("OnEvent", function(self, event)
     local enabled = event == "PLAYER_REGEN_ENABLED"
     self.Slider:SetEnabled(enabled)
-    self.FlipCheck:SetEnabled(enabled)
+    self.OddsEvensCheck:SetEnabled(enabled)
   end)
 end
 
@@ -93,7 +94,7 @@ function SliderPanel.Install(db, onChange)
     end
   end, panel)
 
-  panel.FlipCheck:SetScript("OnClick", function(self)
+  panel.OddsEvensCheck:SetScript("OnClick", function(self)
     db.flipFill = self:GetChecked()
     if db.perLine < Constants.MAX_GROUPS then
       onChange() -- at 8 per line the fill order changes nothing, so Blizzard's layout stays untouched
@@ -107,12 +108,11 @@ function SliderPanel.Install(db, onChange)
       local stacked = container:GetSettingValue(_G.Enum.EditModeUnitFrameSetting.RaidGroupDisplayType)
         == _G.Enum.RaidGroupDisplayType.SeparateGroupsHorizontal
       panel.Label:SetText(stacked and Localization.Text("Groups Per Column") or Localization.Text("Groups Per Row"))
-      panel.FlipLabel:SetText(stacked and Localization.Text("Fill Rows First") or Localization.Text("Odds / Evens"))
       panel.Slider:Init(db.perLine, MIN_PER_LINE, Constants.MAX_GROUPS, Constants.MAX_GROUPS - MIN_PER_LINE, formatters)
-      panel.FlipCheck:SetChecked(db.flipFill)
+      panel.OddsEvensCheck:SetChecked(db.flipFill)
       local enabled = not _G.InCombatLockdown()
       panel.Slider:SetEnabled(enabled)
-      panel.FlipCheck:SetEnabled(enabled)
+      panel.OddsEvensCheck:SetEnabled(enabled)
     end
   end)
 
