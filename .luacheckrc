@@ -39,6 +39,7 @@ read_globals = {
   "CreateMinimalSliderFormatter",
 
   -- Misc
+  "GetRaidRosterInfo",
   "InCombatLockdown",
   "wipe",
 }

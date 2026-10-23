@@ -5,7 +5,7 @@ local GroupWrap = require("RaidGroupWrap.Layout.GroupWrap")
 local GROUP_WIDTH, GROUP_HEIGHT = 72, 180
 
 -- Blizzard's default Separate Groups (Vertical) look: 8 groups side by side,
--- a "linebreak" marker between them, and a raid pet frame at the end.
+-- a "linebreak" marker between them, and a non-group frame with no unit at the end.
 local function setup(perLine, flipFill)
   local W = Wow.Install()
   local groups = {}
@@ -57,7 +57,7 @@ local function test_container_is_resized_to_the_wrapped_block()
   Assert.equal(height, 360)
 end
 
-local function test_raid_pets_keep_blizzard_position()
+local function test_non_pet_frames_keep_blizzard_position()
   local W, _groups, _db, pet = setup(4)
   GroupWrap.Wrap()
   local _point, _relativeTo, _relativePoint, x, y = pet:GetPoint(1)
@@ -263,7 +263,7 @@ end
 return function()
   test_wrap_moves_groups_into_rows_of_per_line()
   test_container_is_resized_to_the_wrapped_block()
-  test_raid_pets_keep_blizzard_position()
+  test_non_pet_frames_keep_blizzard_position()
   test_combined_groups_mode_is_left_alone()
   test_no_groups_does_nothing()
   test_side_by_side_rows_use_horizontal_spacing()
