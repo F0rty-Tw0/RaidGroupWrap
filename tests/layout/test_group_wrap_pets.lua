@@ -151,6 +151,27 @@ local function test_orphan_pets_form_a_row_below_stacked_groups()
   GroupWrap.Wrap()
   assertAt(W, first, 0, -264)
   assertAt(W, second, 75, -264)
+  local width, height = W.container:GetSize()
+  Assert.equal(width, 726)
+  Assert.equal(height, 288)
+end
+
+local function test_orphan_column_starts_at_the_block_origin()
+  local W, groups = setup(4)
+  groups[1]:ClearAllPoints()
+  groups[1]:SetPoint("TOPLEFT", W.container, "TOPLEFT", 5, -3)
+  local pet = addPet(W, "pet", 0, nil)
+  GroupWrap.Wrap()
+  assertAt(W, pet, 293, -3)
+end
+
+local function test_orphan_row_starts_at_the_block_origin()
+  local W, groups = setupStacked(4)
+  groups[1]:ClearAllPoints()
+  groups[1]:SetPoint("TOPLEFT", W.container, "TOPLEFT", 5, -3)
+  local pet = addPet(W, "pet", 0, nil)
+  GroupWrap.Wrap()
+  assertAt(W, pet, 5, -243)
 end
 
 local function test_solo_pet_in_edit_mode_is_an_orphan()
@@ -233,6 +254,8 @@ end
 return function()
   test_orphan_pets_form_a_column_after_the_block()
   test_orphan_pets_form_a_row_below_stacked_groups()
+  test_orphan_column_starts_at_the_block_origin()
+  test_orphan_row_starts_at_the_block_origin()
   test_solo_pet_in_edit_mode_is_an_orphan()
   test_pet_with_unknown_owner_is_an_orphan()
   test_slider_to_eight_puts_pets_back_after_the_last_group()
