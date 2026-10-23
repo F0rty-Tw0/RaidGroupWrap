@@ -8,6 +8,7 @@ local GroupGrid = ns.GroupGrid or require("RaidGroupWrap.Layout.GroupGrid")
 
 local ipairs = ipairs
 local max = math.max
+local min = math.min
 local type = type
 
 -- Blizzard's FlowContainer gives every raid group its own line (isFlowGroup),
@@ -66,7 +67,8 @@ end
 
 -- petSlots[i] = slot in `groups` of pet i's owner group, or ORPHAN.
 -- Run after any reordering, so slots match the final order.
-local function assignPets()
+-- Not wrapping (slider moved to 8): every pet is an orphan, which is Blizzard's spot.
+local function assignPets(wrapping)
   _G.wipe(slotById)
   for slot, group in ipairs(groups) do
     slotById[group:GetID()] = slot
@@ -74,7 +76,7 @@ local function assignPets()
   for i, pet in ipairs(pets) do
     local slot = ORPHAN
     local index = PET_RAID_INDEX[pet.unit]
-    if index > 0 then
+    if wrapping and index > 0 then
       local _, _, subgroup = _G.GetRaidRosterInfo(index)
       slot = subgroup and slotById[subgroup] or ORPHAN
     end
@@ -102,7 +104,7 @@ local function growForPets(sideBySide)
   end
 end
 
-local function measureGroups(sideBySide)
+local function measureGroups(sideBySide, wrapping)
   for i, group in ipairs(groups) do
     local size = sizes[i] or {}
     size.ownWidth, size.ownHeight = group:GetSize()
@@ -114,7 +116,7 @@ local function measureGroups(sideBySide)
     sizes[i] = nil
   end
   if #pets > 0 then
-    assignPets()
+    assignPets(wrapping)
     growForPets(sideBySide)
   end
 end
@@ -141,6 +143,31 @@ local function placeOwnedPets(sideBySide)
   end
 end
 
+-- Orphans (no shown owner group) get one line past the block, the way Blizzard's
+-- flow lines up pets after the last group. Never wrapped. Returns the grown edges.
+local function placeOrphanPets(sideBySide, right, bottom, x0, y0, gap)
+  local x, y, spacing
+  if sideBySide then
+    x, y, spacing = right + gap, y0, container.flowVerticalSpacing or 0
+  else
+    x, y, spacing = x0, bottom - gap, container.flowHorizontalSpacing or 0
+  end
+  for i, pet in ipairs(pets) do
+    if petSlots[i] == ORPHAN then
+      local width, height = pet:GetSize()
+      pet:ClearAllPoints()
+      pet:SetPoint("TOPLEFT", container, "TOPLEFT", x, y)
+      right, bottom = max(right, x + width), min(bottom, y - height)
+      if sideBySide then
+        y = y - height - spacing
+      else
+        x = x + width + spacing
+      end
+    end
+  end
+  return right, bottom
+end
+
 function GroupWrap.Wrap()
   if container:GetGroupMode() ~= "discrete" then
     return -- "Combine Groups" already has Blizzard's own Row Size setting
@@ -155,14 +182,15 @@ function GroupWrap.Wrap()
   if #groups == 0 then
     return
   end
-  if db.flipFill and db.perLine < Constants.MAX_GROUPS then -- off at 8: Blizzard's order
+  local wrapping = db.perLine < Constants.MAX_GROUPS -- off at 8: Blizzard's order and pet spot
+  if db.flipFill and wrapping then
     orderOddsThenEvens()
   end
 
   -- Flow "vertical" = Separate Groups (Vertical): groups sit side by side, so a line is a row.
   -- Flow "horizontal" = Separate Groups (Horizontal): groups stack downward, so a line is a column.
   local sideBySide = container.flowOrientation == "vertical"
-  measureGroups(sideBySide)
+  measureGroups(sideBySide, wrapping)
   local gap
   if sideBySide then
     gap = container.flowHorizontalSpacing or 0
@@ -178,6 +206,7 @@ function GroupWrap.Wrap()
   end
   if #pets > 0 then
     placeOwnedPets(sideBySide)
+    right, bottom = placeOrphanPets(sideBySide, right, bottom, x0, y0, gap)
   end
 
   -- Fit the Edit Mode box to the wrapped block. SetSize, not container:Layout(),

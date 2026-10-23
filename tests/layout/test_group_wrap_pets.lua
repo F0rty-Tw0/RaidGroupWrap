@@ -118,7 +118,129 @@ local function test_container_covers_owned_pets()
   Assert.equal(height, 384)
 end
 
+-- The addon's own event frame: the only frame with an OnEvent script.
+local function eventFrame(W)
+  for _, frame in ipairs(W.frames) do
+    if W.state(frame).scripts.OnEvent then
+      return frame
+    end
+  end
+end
+
+-- Groups 7-8 not shown (e.g. Mythic), so their members' pets have no owner group.
+local function test_orphan_pets_form_a_column_after_the_block()
+  local W = setup(4, nil, 6)
+  W.container.flowHorizontalSpacing = 10
+  W.container.flowVerticalSpacing = 5
+  local first = addPet(W, "raidpet39", 39, 7)
+  local second = addPet(W, "raidpet40", 40, 7)
+  GroupWrap.Wrap()
+  assertAt(W, first, 328, 0)
+  assertAt(W, second, 328, -29)
+  local width, height = W.container:GetSize()
+  Assert.equal(width, 400)
+  Assert.equal(height, 370)
+end
+
+local function test_orphan_pets_form_a_row_below_stacked_groups()
+  local W = setupStacked(4, 6)
+  W.container.flowVerticalSpacing = 6
+  W.container.flowHorizontalSpacing = 3
+  local first = addPet(W, "raidpet39", 39, 7)
+  local second = addPet(W, "raidpet40", 40, 7)
+  GroupWrap.Wrap()
+  assertAt(W, first, 0, -264)
+  assertAt(W, second, 75, -264)
+end
+
+local function test_solo_pet_in_edit_mode_is_an_orphan()
+  local W = setup(4)
+  local pet = addPet(W, "pet", 0, nil)
+  GroupWrap.Wrap()
+  assertAt(W, pet, 288, 0)
+end
+
+local function test_pet_with_unknown_owner_is_an_orphan()
+  local W = setup(4)
+  local pet = addPet(W, "raidpet3", 3, nil)
+  GroupWrap.Wrap()
+  assertAt(W, pet, 288, 0)
+end
+
+-- The slider calls Wrap() directly when it moves to 8.
+local function test_slider_to_eight_puts_pets_back_after_the_last_group()
+  local W, _groups, db = setup(4)
+  local pet = addPet(W, "raidpet21", 21, 5)
+  GroupWrap.Wrap()
+  assertAt(W, pet, 0, -360)
+  db.perLine = 8
+  GroupWrap.Wrap()
+  assertAt(W, pet, 576, 0)
+end
+
+local function test_wrapping_twice_gives_the_same_pet_anchor()
+  local W = setup(4)
+  local pet = addPet(W, "raidpet21", 21, 5)
+  GroupWrap.Wrap()
+  GroupWrap.Wrap()
+  assertAt(W, pet, 0, -360)
+end
+
+local function test_combat_defers_pet_moves_until_combat_ends()
+  local W = setup(4)
+  local pet = addPet(W, "raidpet21", 21, 5)
+  W.inCombat = true
+  GroupWrap.Wrap()
+  assertAt(W, pet, BLIZZARD_PET_X, BLIZZARD_PET_Y)
+  W.inCombat = false
+  W.fireEvent(eventFrame(W), "PLAYER_REGEN_ENABLED")
+  assertAt(W, pet, 0, -360)
+end
+
+local function test_odds_evens_keeps_pets_under_their_owner()
+  local W, groups = setup(4, true)
+  local pet = addPet(W, "raidpet21", 21, 5)
+  GroupWrap.Wrap()
+  assertAt(W, groups[5], 144, 0)
+  assertAt(W, pet, 144, -180)
+end
+
+local function test_main_tank_frames_keep_their_anchor()
+  local W = setup(4)
+  local tank = W.newPet("raid1", 72, 36, 5, 7)
+  local tankTarget = W.newPet("raid1target", 72, 36, 5, 43)
+  local noUnit = W.newPet(nil, 72, 24, 9, 9)
+  table.insert(W.container.flowFrames, 1, tank)
+  table.insert(W.container.flowFrames, 2, tankTarget)
+  table.insert(W.container.flowFrames, 3, noUnit)
+  GroupWrap.Wrap()
+  assertAt(W, tank, 5, 7)
+  assertAt(W, tankTarget, 5, 43)
+  assertAt(W, noUnit, 9, 9)
+end
+
+local function test_pet_placement_never_writes_fields()
+  local W = setup(4, true)
+  local pet = addPet(W, "raidpet21", 21, 5)
+  local before = W.snapshot(pet)
+  W.callHooked(_G, "FlowContainer_DoLayout", W.container)
+  W.inCombat = true
+  GroupWrap.Wrap()
+  Assert.equal(W.changedKeys(pet, before), "")
+  Assert.equal(#W.forbiddenCalls, 0, table.concat(W.forbiddenCalls, ","))
+end
+
 return function()
+  test_orphan_pets_form_a_column_after_the_block()
+  test_orphan_pets_form_a_row_below_stacked_groups()
+  test_solo_pet_in_edit_mode_is_an_orphan()
+  test_pet_with_unknown_owner_is_an_orphan()
+  test_slider_to_eight_puts_pets_back_after_the_last_group()
+  test_wrapping_twice_gives_the_same_pet_anchor()
+  test_combat_defers_pet_moves_until_combat_ends()
+  test_odds_evens_keeps_pets_under_their_owner()
+  test_main_tank_frames_keep_their_anchor()
+  test_pet_placement_never_writes_fields()
   test_pet_sits_under_its_owner_group()
   test_two_pets_of_one_group_stack_downward()
   test_group_with_a_pet_makes_its_row_taller()
