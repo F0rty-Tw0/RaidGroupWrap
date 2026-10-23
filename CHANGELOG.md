@@ -6,6 +6,8 @@ All releases: **1.0.x (current)**
 
 ## [Unreleased]
 
+## [1.0.5] - 2026-10-23
+
 - Raid pets now sit under their owner's group when groups wrap, instead of leaving a gap where the last group used to be.
 
 ## [1.0.4] - 2026-10-14
