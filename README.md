@@ -1,5 +1,7 @@
 <p align="center"><img src=".github/assets/logo.png" alt="Raid Group Wrap logo" width="160"></p>
 
+[![BuyMeACoffee](https://raw.githubusercontent.com/pachadotdev/buymeacoffee-badges/main/bmc-donate-yellow.svg)](buymeacoffee.com/f0rty_tw0)
+
 <h1 align="center">Raid Group Wrap</h1>
 
 <p align="center"><b>Blizzard's raid frames, but eight groups no longer stretch across your whole screen.</b></p>
