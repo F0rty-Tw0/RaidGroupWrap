@@ -51,6 +51,13 @@ local function newWidget(W, frameType, name, parent, template)
   function widget:GetHeight()
     return stub.height or 0
   end
+  function widget:SetID(id)
+    stub.id = id
+  end
+  -- Like WoW, a frame with no ID reports 0.
+  function widget:GetID()
+    return stub.id or 0
+  end
   function widget:SetFrameStrata(strata)
     stub.strata = strata
   end
@@ -213,12 +220,25 @@ local function installDrivers(W)
   end
 
   -- A raid group frame from Blizzard's flow layout, at its original spot.
-  function W.newGroup(width, height, x, y)
+  function W.newGroup(width, height, x, y, id)
     local group = newWidget(W, "Frame")
     group.isFlowGroup = true
     group:SetSize(width, height)
     group:SetPoint("TOPLEFT", W.container, "TOPLEFT", x or 0, y or 0)
+    if id then
+      group:SetID(id)
+    end
     return group
+  end
+
+  -- A unit frame from Blizzard's flow layout (raid pet, main tank, ...);
+  -- the caller adds it to container.flowFrames.
+  function W.newPet(unit, width, height, x, y)
+    local pet = newWidget(W, "Button")
+    pet.unit = unit
+    pet:SetSize(width, height)
+    pet:SetPoint("TOPLEFT", W.container, "TOPLEFT", x or 0, y or 0)
+    return pet
   end
 end
 
@@ -265,7 +285,7 @@ local function installDialog(W)
 end
 
 function Wow.Install()
-  local W = { calls = {}, frames = {}, secureHooks = {}, forbiddenCalls = {}, groupMode = "discrete" }
+  local W = { calls = {}, frames = {}, secureHooks = {}, forbiddenCalls = {}, groupMode = "discrete", roster = {} }
 
   local function def(name, fn)
     rawset(_G, name, function(...)
@@ -311,6 +331,13 @@ function Wow.Install()
   end)
   def("InCombatLockdown", function()
     return W.inCombat == true
+  end)
+  -- W.roster[n] = subgroup of raid member n; unset members return nothing.
+  def("GetRaidRosterInfo", function(n)
+    local subgroup = W.roster[n]
+    if subgroup then
+      return "Member" .. n, 0, subgroup
+    end
   end)
   def("wipe", function(t)
     for key in pairs(t) do
